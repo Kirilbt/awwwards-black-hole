@@ -8,12 +8,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
-// Test
-const test = new THREE.Mesh(
-    new THREE.SphereGeometry(),
-    new THREE.MeshNormalMaterial({ wireframe: true }),
-)
-scene.add(test)
+// // Test
+// const test = new THREE.Mesh(
+//     new THREE.SphereGeometry(),
+//     new THREE.MeshNormalMaterial({ wireframe: true }),
+// )
+// scene.add(test)
 
 /**
  * Sizes
@@ -57,10 +57,33 @@ renderer.setSize(sizes.width, sizes.height)
  */
 const disc = {}
 
+// Gradient
+disc.gradient = {}
+disc.gradient.canvas = document.createElement('canvas')
+disc.gradient.canvas.width = 1
+disc.gradient.canvas.height = 128
+// disc.gradient.canvas.style.position = 'absolute'
+// disc.gradient.canvas.style.top = 0
+// disc.gradient.canvas.style.left = 0
+// disc.gradient.canvas.style.zIndex = 1
+// document.body.append(disc.gradient.canvas)
+disc.gradient.context = disc.gradient.canvas.getContext('2d')
+disc.gradient.style = disc.gradient.context.createLinearGradient(0, 0, 0, disc.gradient.canvas.height)
+disc.gradient.style.addColorStop(0, '#fffbf9')
+disc.gradient.style.addColorStop(0.1, '#ffbc68')
+disc.gradient.style.addColorStop(0.2, '#ff5600')
+disc.gradient.style.addColorStop(0.4, '#ff0053')
+disc.gradient.style.addColorStop(0.8, '#cc00ff')
+disc.gradient.context.fillStyle = disc.gradient.style
+disc.gradient.context.fillRect(0, 0, disc.gradient.canvas.width, disc.gradient.canvas.height)
+disc.gradient.texture = new THREE.CanvasTexture(disc.gradient.canvas)
+
+
 // Mesh
 disc.geometry = new THREE.CylinderGeometry(1.5, 6, 0, 64, 8, true)
 disc.material = new THREE.MeshBasicMaterial({
-  wireframe: true
+  wireframe: false,
+  map: disc.gradient.texture
 })
 disc.mesh = new THREE.Mesh(disc.geometry, disc.material)
 scene.add(disc.mesh)
