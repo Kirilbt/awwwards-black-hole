@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import discVertex from './shaders/disc/vertex.glsl'
 import discFragment from './shaders/disc/fragment.glsl'
+import noisesVertex from './shaders/noises/vertex.glsl'
+import noisesFragment from './shaders/noises/fragment.glsl'
 
 /**
  * Setup
@@ -66,9 +68,9 @@ noises.scene.add(noises.camera)
 // Plane
 noises.plane = {}
 noises.plane.geometry = new THREE.PlaneGeometry(2, 2)
-noises.plane.material = new THREE.MeshBasicMaterial({
-  color: 'red',
-  wireframe: true
+noises.plane.material = new THREE.ShaderMaterial({
+  vertexShader: noisesVertex,
+  fragmentShader: noisesFragment
 })
 noises.plane.mesh = new THREE.Mesh(noises.plane.geometry, noises.plane.material)
 noises.scene.add(noises.plane.mesh)
@@ -90,14 +92,14 @@ renderer.setRenderTarget(noises.renderTarget)
 renderer.render(noises.scene, noises.camera)
 renderer.setRenderTarget(null)
 
-// Debug Plane
-noises.debugPlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(1, 1),
-  new THREE.MeshBasicMaterial({
-    map: noises.renderTarget.texture
-  })
-)
-scene.add(noises.debugPlane)
+// // Debug Plane
+// noises.debugPlane = new THREE.Mesh(
+//   new THREE.PlaneGeometry(1, 1),
+//   new THREE.MeshBasicMaterial({
+//     map: noises.renderTarget.texture
+//   })
+// )
+// scene.add(noises.debugPlane)
 
 
 /**
@@ -130,10 +132,12 @@ disc.gradient.texture = new THREE.CanvasTexture(disc.gradient.canvas)
 // Mesh
 disc.geometry = new THREE.CylinderGeometry(1.5, 6, 0, 64, 8, true)
 disc.material = new THREE.ShaderMaterial({
+  transparent: true,
   vertexShader: discVertex,
   fragmentShader: discFragment,
   uniforms: {
-    uGradientTexture: { value: disc.gradient.texture }
+    uGradientTexture: { value: disc.gradient.texture },
+    uNoisesTexture: { value: noises.renderTarget.texture }
   }
 })
 disc.mesh = new THREE.Mesh(disc.geometry, disc.material)
