@@ -90,6 +90,16 @@ renderer.setRenderTarget(noises.renderTarget)
 renderer.render(noises.scene, noises.camera)
 renderer.setRenderTarget(null)
 
+// Debug Plane
+noises.debugPlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1),
+  new THREE.MeshBasicMaterial({
+    map: noises.renderTarget.texture
+  })
+)
+scene.add(noises.debugPlane)
+
+
 /**
  * Disc
  */
