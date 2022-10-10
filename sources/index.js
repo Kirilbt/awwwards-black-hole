@@ -1,6 +1,8 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import discVertex from './shaders/disc/vertex.glsl'
+import discFragment from './shaders/disc/fragment.glsl'
 
 /**
  * Setup
@@ -81,9 +83,12 @@ disc.gradient.texture = new THREE.CanvasTexture(disc.gradient.canvas)
 
 // Mesh
 disc.geometry = new THREE.CylinderGeometry(1.5, 6, 0, 64, 8, true)
-disc.material = new THREE.MeshBasicMaterial({
-  wireframe: false,
-  map: disc.gradient.texture
+disc.material = new THREE.ShaderMaterial({
+  vertexShader: discVertex,
+  fragmentShader: discFragment,
+  uniforms: {
+    uGradientTexture: { value: disc.gradient.texture }
+  }
 })
 disc.mesh = new THREE.Mesh(disc.geometry, disc.material)
 scene.add(disc.mesh)
