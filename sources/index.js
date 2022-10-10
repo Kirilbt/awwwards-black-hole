@@ -53,6 +53,19 @@ renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
 renderer.setSize(sizes.width, sizes.height)
 
 /**
+ * Disc
+ */
+const disc = {}
+
+// Mesh
+disc.geometry = new THREE.CylinderGeometry(1.5, 6, 0, 64, 8, true)
+disc.material = new THREE.MeshBasicMaterial({
+  wireframe: true
+})
+disc.mesh = new THREE.Mesh(disc.geometry, disc.material)
+scene.add(disc.mesh)
+
+/**
  * Tick loop
  */
 const tick = () =>
