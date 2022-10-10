@@ -55,6 +55,25 @@ renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
 renderer.setSize(sizes.width, sizes.height)
 
 /**
+ * Noises
+ */
+const noises = {}
+noises.scene = new THREE.Scene()
+noises.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
+noises.camera.position.set(0, 0, 5)
+noises.scene.add(noises.camera)
+
+// Plane
+noises.plane = {}
+noises.plane.geometry = new THREE.PlaneGeometry(2, 2)
+noises.plane.material = new THREE.MeshBasicMaterial({
+  color: 'red',
+  wireframe: true
+})
+noises.plane.mesh = new THREE.Mesh(noises.plane.geometry, noises.plane.material)
+noises.scene.add(noises.plane.mesh)
+
+/**
  * Disc
  */
 const disc = {}
@@ -103,6 +122,24 @@ const tick = () =>
 
     // Render
     renderer.render(scene, camera)
+    // renderer.render(noises.scene, noises.camera)
+
+    // Render Target
+    noises.renderTarget = new THREE.WebGLRenderTarget(
+      256,
+      256,
+      {
+        generateMipmaps: false,
+        type: THREE.FloatType,
+        wrapS: THREE.RepeatWrapping,
+        wrapT: THREE.RepeatWrapping
+      }
+    )
+
+    // Render the noises into the render target
+    renderer.setRenderTarget(noises.renderTarget)
+    renderer.render(noises.scene, noises.camera)
+    renderer.setRenderTarget(null)
 
     // Keep ticking
     window.requestAnimationFrame(tick)
