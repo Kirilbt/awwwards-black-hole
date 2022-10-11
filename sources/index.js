@@ -11,6 +11,8 @@ import distortionHoleVertex from './shaders/distortionHole/vertex.glsl'
 import distortionHoleFragment from './shaders/distortionHole/fragment.glsl'
 import compositionVertex from './shaders/composition/vertex.glsl'
 import compositionFragment from './shaders/composition/fragment.glsl'
+import distortionDiscVertex from './shaders/distortionDisc/vertex.glsl'
+import distortionDiscFragment from './shaders/distortionDisc/fragment.glsl'
 
 
 
@@ -231,6 +233,19 @@ distortion.hole.material = new THREE.ShaderMaterial({
 })
 distortion.hole.mesh = new THREE.Mesh(distortion.hole.geometry, distortion.hole.material)
 distortion.scene.add(distortion.hole.mesh)
+
+// Disc
+distortion.disc = {}
+distortion.disc.geometry = new THREE.PlaneGeometry(12, 12)
+distortion.disc.material = new THREE.ShaderMaterial({
+  transparent: true,
+  side: THREE.DoubleSide,
+  vertexShader: distortionDiscVertex,
+  fragmentShader: distortionDiscFragment
+})
+distortion.disc.mesh = new THREE.Mesh(distortion.disc.geometry, distortion.disc.material)
+distortion.disc.mesh.rotation.x = - Math.PI * 0.5
+distortion.scene.add(distortion.disc.mesh)
 
 /**
  * Composition

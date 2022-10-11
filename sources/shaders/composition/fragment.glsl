@@ -10,5 +10,6 @@ void main() {
   vec2 distoredUv = vUv + toConvergence * distortionStrength;
 
   vec4 color = texture(uDefaultTexture, distoredUv);
-  gl_FragColor = color;
+  vec4 temp = texture(uDistortionTexture, vUv);
+  gl_FragColor = temp;
 }
