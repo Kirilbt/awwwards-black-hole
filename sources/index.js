@@ -5,6 +5,8 @@ import discVertex from './shaders/disc/vertex.glsl'
 import discFragment from './shaders/disc/fragment.glsl'
 import noisesVertex from './shaders/noises/vertex.glsl'
 import noisesFragment from './shaders/noises/fragment.glsl'
+import starsVertex from './shaders/stars/vertex.glsl'
+import starsFragment from './shaders/stars/fragment.glsl'
 
 /**
  * Setup
@@ -53,8 +55,49 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true
 })
+renderer.setClearColor('#130e16')
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
 renderer.setSize(sizes.width, sizes.height)
+
+/**
+ * Stars
+ */
+const stars = {}
+stars.count = 10000
+
+// Geometry
+const positionsArray = new Float32Array(stars.count * 3)
+const sizesArray = new Float32Array(stars.count)
+
+for (let i = 0; i < stars.count; i++) {
+  const i3 = i * 3
+
+  // Positions
+  const theta = 2 * Math.PI * Math.random()
+  const phi = Math.acos(2 * Math.random() - 1.0)
+
+  positionsArray[i3 + 0] = Math.cos(theta) * Math.sin(phi) * 400
+  positionsArray[i3 + 1] = Math.sin(theta) * Math.sin(phi) * 400
+  positionsArray[i3 + 2] = Math.cos(phi) * 400
+
+  // Sizes
+  sizesArray[i] = 0.5 + Math.random() * 30
+}
+
+stars.geometry = new THREE.BufferGeometry()
+stars.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
+stars.geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizesArray, 1))
+
+// Material
+stars.material = new THREE.ShaderMaterial({
+  transparent: true,
+  vertexShader: starsVertex,
+  fragmentShader: starsFragment
+})
+
+// Points
+stars.points = new THREE.Points(stars.geometry, stars.material)
+scene.add(stars.points)
 
 /**
  * Noises
@@ -133,6 +176,7 @@ disc.gradient.texture = new THREE.CanvasTexture(disc.gradient.canvas)
 disc.geometry = new THREE.CylinderGeometry(1.5, 6, 0, 64, 8, true)
 disc.material = new THREE.ShaderMaterial({
   transparent: true,
+  side: THREE.DoubleSide,
   vertexShader: discVertex,
   fragmentShader: discFragment,
   uniforms: {
