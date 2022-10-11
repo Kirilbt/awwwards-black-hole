@@ -264,7 +264,8 @@ composition.distortionRenderTarget = new THREE.WebGLRenderTarget(
   sizes.width * renderer.getPixelRatio(),
   sizes.height * renderer.getPixelRatio(),
   {
-      generateMipmaps: false
+      generateMipmaps: false,
+      format: THREE.RedFormat
   }
 )
 
