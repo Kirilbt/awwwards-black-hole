@@ -68,6 +68,7 @@ stars.count = 10000
 // Geometry
 const positionsArray = new Float32Array(stars.count * 3)
 const sizesArray = new Float32Array(stars.count)
+const colorsArray = new Float32Array(stars.count * 3)
 
 for (let i = 0; i < stars.count; i++) {
   const i3 = i * 3
@@ -82,11 +83,21 @@ for (let i = 0; i < stars.count; i++) {
 
   // Sizes
   sizesArray[i] = 0.5 + Math.random() * 30
+
+  // Colors
+  const hue = Math.round(Math.random() * 360)
+  const lightness = Math.round(80 + Math.random() * 20)
+  const color = new THREE.Color(`hsl(${hue}, 100%, ${lightness}%)`)
+
+  colorsArray[i3 + 0] = color.r
+  colorsArray[i3 + 1] = color.g
+  colorsArray[i3 + 2] = color.b
 }
 
 stars.geometry = new THREE.BufferGeometry()
 stars.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3))
 stars.geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizesArray, 1))
+stars.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsArray, 3))
 
 // Material
 stars.material = new THREE.ShaderMaterial({
