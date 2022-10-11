@@ -288,6 +288,9 @@ const tick = () => {
   // Update camera and controls
   controls.update()
 
+  // Update distortion
+  distortion.hole.mesh.lookAt(camera.position)
+
   // Render
   renderer.render(scene, camera)
   renderer.render(distortion.scene, camera)
