@@ -136,6 +136,7 @@ disc.material = new THREE.ShaderMaterial({
   vertexShader: discVertex,
   fragmentShader: discFragment,
   uniforms: {
+    uTime: { value: 0 },
     uGradientTexture: { value: disc.gradient.texture },
     uNoisesTexture: { value: noises.renderTarget.texture }
   }
@@ -146,16 +147,23 @@ scene.add(disc.mesh)
 /**
  * Tick loop
  */
-const tick = () =>
-{
-    // Update camera and controls
-    controls.update()
+const clock = new THREE.Clock()
 
-    // Render
-    renderer.render(scene, camera)
-    // renderer.render(noises.scene, noises.camera)
+const tick = () => {
+  // Elapsed Time
+  const time = clock.getElapsedTime()
 
-    // Keep ticking
+  // Update Disc
+  disc.material.uniforms.uTime.value = time
+
+  // Update camera and controls
+  controls.update()
+
+  // Render
+  renderer.render(scene, camera)
+  // renderer.render(noises.scene, noises.camera)
+
+  // Keep ticking
     window.requestAnimationFrame(tick)
 }
 
