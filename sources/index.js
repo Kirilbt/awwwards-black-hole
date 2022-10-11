@@ -295,11 +295,13 @@ const tick = () => {
 
   // Render default scene
   renderer.setRenderTarget(composition.defaultRenderTarget)
+  renderer.setClearColor('#130e16')
   renderer.render(scene, camera)
   renderer.setRenderTarget(null)
 
   // Render distortion scene
   renderer.setRenderTarget(composition.distortionRenderTarget)
+  renderer.setClearColor('#000000')
   renderer.render(distortion.scene, camera)
   renderer.setRenderTarget(null)
 
