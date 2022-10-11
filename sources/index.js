@@ -9,6 +9,8 @@ import starsVertex from './shaders/stars/vertex.glsl'
 import starsFragment from './shaders/stars/fragment.glsl'
 import distortionHoleVertex from './shaders/distortionHole/vertex.glsl'
 import distortionHoleFragment from './shaders/distortionHole/fragment.glsl'
+import compositionVertex from './shaders/composition/vertex.glsl'
+import compositionFragment from './shaders/composition/fragment.glsl'
 
 
 
@@ -32,14 +34,24 @@ const scene = new THREE.Scene()
 const sizes = { width: window.innerWidth, height: window.innerHeight }
 window.addEventListener('resize', () =>
 {
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
+  sizes.width = window.innerWidth
+  sizes.height = window.innerHeight
 
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+  camera.aspect = sizes.width / sizes.height
+  camera.updateProjectionMatrix()
 
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
-    renderer.setSize(sizes.width, sizes.height)
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
+  renderer.setSize(sizes.width, sizes.height)
+
+  composition.distortionRenderTarget.setSize(
+    sizes.width * renderer.getPixelRatio(),
+    sizes.height * renderer.getPixelRatio()
+  )
+
+  composition.defaultRenderTarget.setSize(
+    sizes.width * renderer.getPixelRatio(),
+    sizes.height * renderer.getPixelRatio()
+  )
 })
 
 /**
@@ -221,6 +233,47 @@ distortion.hole.mesh = new THREE.Mesh(distortion.hole.geometry, distortion.hole.
 distortion.scene.add(distortion.hole.mesh)
 
 /**
+ * Composition
+ */
+const composition = {}
+
+composition.defaultRenderTarget = new THREE.WebGLRenderTarget(
+  sizes.width * renderer.getPixelRatio(),
+  sizes.height * renderer.getPixelRatio(),
+  {
+    generateMipmaps: false
+  }
+)
+
+composition.distortionRenderTarget = new THREE.WebGLRenderTarget(
+  sizes.width * renderer.getPixelRatio(),
+  sizes.height * renderer.getPixelRatio(),
+  {
+      generateMipmaps: false
+  }
+)
+
+// Custom scene
+composition.scene = new THREE.Scene()
+composition.camera = new THREE.OrthographicCamera(- 1, 1, 1, - 1, 0.1, 10)
+composition.camera.position.set(0, 0, 5)
+composition.scene.add(composition.camera)
+
+// Plane
+composition.plane = {}
+composition.plane.geometry = new THREE.PlaneGeometry(2, 2)
+composition.plane.material = new THREE.ShaderMaterial({
+  vertexShader: compositionVertex,
+  fragmentShader: compositionFragment,
+  uniforms: {
+    uDefaultTexture: { value: composition.defaultRenderTarget.texture },
+    uDistortionTexture: { value: composition.distortionRenderTarget.texture }
+  }
+})
+composition.plane.mesh = new THREE.Mesh(composition.plane.geometry, composition.plane.material)
+composition.scene.add(composition.plane.mesh)
+
+/**
  * Tick loop
  */
 const clock = new THREE.Clock()
@@ -239,6 +292,19 @@ const tick = () => {
   renderer.render(scene, camera)
   renderer.render(distortion.scene, camera)
   // renderer.render(noises.scene, noises.camera)
+
+  // Render default scene
+  renderer.setRenderTarget(composition.defaultRenderTarget)
+  renderer.render(scene, camera)
+  renderer.setRenderTarget(null)
+
+  // Render distortion scene
+  renderer.setRenderTarget(composition.distortionRenderTarget)
+  renderer.render(distortion.scene, camera)
+  renderer.setRenderTarget(null)
+
+  // Render composition scene
+  renderer.render(composition.scene, composition.camera)
 
   // Keep ticking
     window.requestAnimationFrame(tick)
