@@ -7,6 +7,11 @@ import noisesVertex from './shaders/noises/vertex.glsl'
 import noisesFragment from './shaders/noises/fragment.glsl'
 import starsVertex from './shaders/stars/vertex.glsl'
 import starsFragment from './shaders/stars/fragment.glsl'
+import distortionHoleVertex from './shaders/distortionHole/vertex.glsl'
+import distortionHoleFragment from './shaders/distortionHole/fragment.glsl'
+
+
+
 
 /**
  * Setup
@@ -200,6 +205,22 @@ disc.mesh = new THREE.Mesh(disc.geometry, disc.material)
 scene.add(disc.mesh)
 
 /**
+ * Distortion
+ */
+const distortion = {}
+distortion.scene = new THREE.Scene()
+
+// Hole
+distortion.hole = {}
+distortion.hole.geometry = new THREE.PlaneGeometry(4, 4)
+distortion.hole.material = new THREE.ShaderMaterial({
+  vertexShader: distortionHoleVertex,
+  fragmentShader: distortionHoleFragment
+})
+distortion.hole.mesh = new THREE.Mesh(distortion.hole.geometry, distortion.hole.material)
+distortion.scene.add(distortion.hole.mesh)
+
+/**
  * Tick loop
  */
 const clock = new THREE.Clock()
@@ -216,6 +237,7 @@ const tick = () => {
 
   // Render
   renderer.render(scene, camera)
+  renderer.render(distortion.scene, camera)
   // renderer.render(noises.scene, noises.camera)
 
   // Keep ticking
