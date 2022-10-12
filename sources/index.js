@@ -285,6 +285,7 @@ composition.plane.material = new THREE.ShaderMaterial({
   vertexShader: compositionVertex,
   fragmentShader: compositionFragment,
   uniforms: {
+    uTime: { value: 0 },
     uDefaultTexture: { value: composition.defaultRenderTarget.texture },
     uDistortionTexture: { value: composition.distortionRenderTarget.texture },
     uConvergencePosition: { value: new THREE.Vector2() }
@@ -326,6 +327,7 @@ const tick = () => {
   screenPosition.x = screenPosition.x * 0.5 + 0.5
   screenPosition.y = screenPosition.y * 0.5 + 0.5
   composition.plane.material.uniforms.uConvergencePosition.value.set(screenPosition.x, screenPosition.y)
+  composition.plane.material.uniforms.uTime.value = time
 
   // Render
   renderer.render(scene, camera)
