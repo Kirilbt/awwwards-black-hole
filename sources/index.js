@@ -304,6 +304,7 @@ const tick = () => {
 
   // Update camera and controls
   controls.update()
+  camera.rotateZ(0.2)
 
   // Update distortion
   distortion.hole.mesh.lookAt(camera.position)
