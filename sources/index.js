@@ -283,7 +283,8 @@ composition.plane.material = new THREE.ShaderMaterial({
   fragmentShader: compositionFragment,
   uniforms: {
     uDefaultTexture: { value: composition.defaultRenderTarget.texture },
-    uDistortionTexture: { value: composition.distortionRenderTarget.texture }
+    uDistortionTexture: { value: composition.distortionRenderTarget.texture },
+    uConvergencePosition: { value: new THREE.Vector2() }
   }
 })
 composition.plane.mesh = new THREE.Mesh(composition.plane.geometry, composition.plane.material)
@@ -306,6 +307,13 @@ const tick = () => {
 
   // Update distortion
   distortion.hole.mesh.lookAt(camera.position)
+
+  // Update composition
+  const screenPosition = new THREE.Vector3(0, 0, 0)
+  screenPosition.project(camera)
+  screenPosition.x = screenPosition.x * 0.5 + 0.5
+  screenPosition.y = screenPosition.y * 0.5 + 0.5
+  composition.plane.material.uniforms.uConvergencePosition.value.set(screenPosition.x, screenPosition.y)
 
   // Render
   renderer.render(scene, camera)
