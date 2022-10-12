@@ -59,9 +59,12 @@ window.addEventListener('resize', () =>
 /**
  * Camera
  */
+const cameraGroup = new THREE.Group()
+scene.add(cameraGroup)
+
 const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 500)
-camera.position.set(0, 0.8, 10)
-scene.add(camera)
+camera.position.set(0, 3, 10)
+cameraGroup.add(camera)
 
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -305,6 +308,14 @@ const tick = () => {
   // Update camera and controls
   controls.update()
   camera.rotateZ(0.2)
+
+  const cameraTime = time * 0.2
+  const shakeAmplitude = 0.1
+  cameraGroup.position.x = shakeAmplitude * Math.sin(cameraTime) * Math.sin(cameraTime * 2.1) * Math.sin(cameraTime * 4.3)
+  cameraGroup.position.y = shakeAmplitude * Math.sin(cameraTime * 1.23) * Math.sin(cameraTime * 4.56) * Math.sin(cameraTime * 7.89)
+  cameraGroup.position.z = shakeAmplitude * Math.sin(cameraTime * 3.45) * Math.sin(cameraTime * 6.78) * Math.sin(cameraTime * 9.01)
+
+  camera.updateWorldMatrix()
 
   // Update distortion
   distortion.hole.mesh.lookAt(camera.position)
